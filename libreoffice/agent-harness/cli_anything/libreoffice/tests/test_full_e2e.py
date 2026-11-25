@@ -895,6 +895,23 @@ class TestCalcToXLSX:
         print(f"\n  CSV output: {result['output']} ({result['file_size']:,} bytes)")
         print(f"  CSV content:\n{content}")
 
+    @pytest.mark.parametrize("formula", ["=SUM(B2:B3)", "=SUM([.B2:.B3])"])
+    def test_calc_formula_is_computed(self, tmp_dir, formula):
+        proj = create_document(doc_type="calc", name="Formula")
+        set_cell(proj, "A2", "Apples")
+        set_cell(proj, "B2", "3", cell_type="float")
+        set_cell(proj, "A3", "Oranges")
+        set_cell(proj, "B3", "5", cell_type="float")
+        set_cell(proj, "A4", "Total")
+        set_cell(proj, "B4", "", formula=formula)
+
+        csv_path = os.path.join(tmp_dir, "formula.csv")
+        result = export(proj, csv_path, preset="csv", overwrite=True)
+
+        with open(result["output"]) as f:
+            rows = f.read().splitlines()
+        assert rows[-1] == "Total,8", rows
+
     def test_calc_to_pdf(self, tmp_dir):
         proj = create_document(doc_type="calc", name="PDF Calc")
         set_cell(proj, "A1", "Budget Item")
@@ -1058,6 +1075,21 @@ class TestCLISubprocessE2E:
         assert os.path.exists(xlsx_path), f"XLSX not created at {xlsx_path}"
         assert zipfile.is_zipfile(xlsx_path), "XLSX is not a valid ZIP"
         print(f"\n  CLI XLSX: {xlsx_path} ({os.path.getsize(xlsx_path):,} bytes)")
+
+    @pytest.mark.parametrize("doc_type,mimetype", [
+        ("writer", "application/vnd.oasis.opendocument.text"),
+        ("calc", "application/vnd.oasis.opendocument.spreadsheet"),
+        ("impress", "application/vnd.oasis.opendocument.presentation"),
+    ])
+    def test_render_without_preset_matches_document_type(self, tmp_dir, doc_type, mimetype):
+        proj_path = os.path.join(tmp_dir, "doc.json")
+        out_path = os.path.join(tmp_dir, "out")
+
+        self._run(["document", "new", "-o", proj_path, "--type", doc_type])
+        self._run(["--project", proj_path, "export", "render", out_path])
+
+        with zipfile.ZipFile(out_path) as zf:
+            assert zf.read("mimetype").decode() == mimetype
 
     def test_full_impress_pptx_workflow(self, tmp_dir):
         """CLI subprocess: create presentation, add slides, export to PPTX."""

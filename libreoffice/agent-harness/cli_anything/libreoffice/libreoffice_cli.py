@@ -655,7 +655,8 @@ def export_preset_info(name):
 
 @export_group.command("render")
 @click.argument("output_path")
-@click.option("--preset", "-p", default="odt", help="Export preset")
+@click.option("--preset", "-p", default=None,
+              help="Export preset (default: odt, ods or odp to match the document type)")
 @click.option("--overwrite", is_flag=True, help="Overwrite existing file")
 @handle_error
 def export_render(output_path, preset, overwrite):
