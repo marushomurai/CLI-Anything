@@ -37,6 +37,7 @@ _FORMAT_TO_DOCTYPE = {
     "ods": "calc",
     "odp": "impress",
 }
+_DOCTYPE_TO_FORMAT = {v: k for k, v in _FORMAT_TO_DOCTYPE.items()}
 
 
 def list_presets() -> List[Dict[str, Any]]:
@@ -119,15 +120,20 @@ def to_text(project: Dict[str, Any], path: str, overwrite: bool = False) -> Dict
 def export(
     project: Dict[str, Any],
     output_path: str,
-    preset: str = "odt",
+    preset: Optional[str] = None,
     overwrite: bool = False,
 ) -> Dict[str, Any]:
     """Export using a named preset.
+
+    Without a preset, the document's own ODF format is used
+    (writer -> odt, calc -> ods, impress -> odp).
 
     Native presets (odt, ods, odp, html, text) produce files directly.
     LibreOffice presets (pdf, docx, xlsx, pptx, csv) first generate an
     ODF intermediate file, then convert it using `libreoffice --headless`.
     """
+    if preset is None:
+        preset = _DOCTYPE_TO_FORMAT[project.get("type", "writer")]
     if preset not in EXPORT_PRESETS:
         raise ValueError(
             f"Unknown preset: {preset}. "
