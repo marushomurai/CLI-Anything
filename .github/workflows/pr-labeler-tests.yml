@@ -1,24 +1,7 @@
 name: PR Labeler Tests
 
+# push・PR・定時・コメント等では起動しない（GitHub Actions を自動で使わない、MAR-2740）。手動の入口だけ残す。
 on:
-  pull_request:
-    paths:
-      - ".github/labeler.yml"
-      - ".github/scripts/pr-labeler.js"
-      - ".github/scripts/tests/pr-labeler-fixtures.json"
-      - ".github/scripts/tests/pr-labeler.test.js"
-      - ".github/workflows/pr-labeler.yml"
-      - ".github/workflows/pr-labeler-tests.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/labeler.yml"
-      - ".github/scripts/pr-labeler.js"
-      - ".github/scripts/tests/pr-labeler-fixtures.json"
-      - ".github/scripts/tests/pr-labeler.test.js"
-      - ".github/workflows/pr-labeler.yml"
-      - ".github/workflows/pr-labeler-tests.yml"
   workflow_dispatch:
 
 permissions:
