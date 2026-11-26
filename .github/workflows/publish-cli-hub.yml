@@ -1,12 +1,8 @@
 name: Publish cli-anything-hub to PyPI
 
+# push・PR・定時・コメント等では起動しない（GitHub Actions を自動で使わない、MAR-2740）。手動の入口だけ残す。
 on:
-  push:
-    branches: [main]
-    paths:
-      - "cli-hub/**"
-      - "!cli-hub/tests/**"
-      - "!cli-hub/README.md"
+  workflow_dispatch:
 
 jobs:
   publish:

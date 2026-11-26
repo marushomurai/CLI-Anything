@@ -1,18 +1,7 @@
 name: Deploy to GitHub Pages
 
+# push・PR・定時・コメント等では起動しない（GitHub Actions を自動で使わない、MAR-2740）。手動の入口だけ残す。
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '*/agent-harness/**'
-      - 'registry.json'
-      - 'public_registry.json'
-      - 'cli-hub/**'
-      - 'docs/hub/**'
-      - '.github/workflows/deploy-pages.yml'
-      - '.github/scripts/update_registry_dates.py'
-      - '.github/scripts/generate_meta_skill.py'
   workflow_dispatch:
 
 permissions:
